@@ -1,0 +1,815 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0b1728">
+  <meta name="description" content="武田信玄の記憶、昇仙峡、湯村温泉、甲州ワイン、ジュエリーを24時間でめぐる甲府観光ガイド。">
+  <meta property="og:title" content="風林火山、その先の甲府へ。">
+  <meta property="og:description" content="富士山だけで帰らない。歴史と渓谷、湯とワインをつなぐKOFU 24H。">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="site_assets/kofu-hero.png">
+  <title>風林火山、その先の甲府へ。｜KOFU 24H</title>
+  <style>
+    :root {
+      --ink: #0b1728;
+      --ink-soft: #16263c;
+      --vermilion: #b93a25;
+      --wine: #6e2942;
+      --gold: #d1a552;
+      --mist: #f1eee6;
+      --paper: #faf8f2;
+      --forest: #315a46;
+      --white: #fff;
+      --muted: #6f746f;
+      --line: rgba(11, 23, 40, .15);
+      --display: "Yu Mincho", "Hiragino Mincho ProN", "Hiragino Mincho Pro", "Noto Serif JP", serif;
+      --body: "Yu Gothic", "Hiragino Kaku Gothic ProN", "Noto Sans JP", sans-serif;
+      --utility: Inter, Arial, sans-serif;
+      --content: min(1180px, calc(100% - 40px));
+      --radius: 2px;
+      --shadow: 0 24px 70px rgba(4, 12, 24, .18);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+    html { scroll-behavior: smooth; scroll-padding-top: 80px; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: var(--paper);
+      font-family: var(--body);
+      line-height: 1.8;
+      overflow-x: hidden;
+      text-rendering: optimizeLegibility;
+    }
+    img { display: block; max-width: 100%; }
+    a { color: inherit; text-decoration: none; }
+    button { font: inherit; }
+    ::selection { color: var(--white); background: var(--vermilion); }
+
+    .skip-link {
+      position: fixed;
+      z-index: 200;
+      top: 10px;
+      left: 10px;
+      transform: translateY(-150%);
+      padding: 12px 18px;
+      color: var(--white);
+      background: var(--vermilion);
+    }
+    .skip-link:focus { transform: translateY(0); }
+
+    .site-nav {
+      position: fixed;
+      z-index: 100;
+      inset: 0 0 auto;
+      height: 74px;
+      display: flex;
+      align-items: center;
+      transition: background .25s ease, box-shadow .25s ease;
+    }
+    .site-nav.is-scrolled,
+    .site-nav.is-open {
+      background: rgba(11, 23, 40, .96);
+      box-shadow: 0 10px 36px rgba(0, 0, 0, .18);
+      backdrop-filter: blur(12px);
+    }
+    .nav-inner {
+      width: var(--content);
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 13px;
+      min-height: 48px;
+      color: var(--white);
+      font-family: var(--display);
+      font-weight: 700;
+      letter-spacing: .08em;
+    }
+    .crest {
+      width: 33px;
+      height: 33px;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 3px;
+      transform: rotate(45deg) scale(.72);
+    }
+    .crest span { border: 2px solid var(--gold); background: rgba(209, 165, 82, .12); }
+    .brand small { display: block; color: rgba(255,255,255,.62); font-family: var(--utility); font-size: 9px; letter-spacing: .2em; }
+
+    .nav-links { display: flex; align-items: center; gap: clamp(18px, 2.3vw, 34px); }
+    .nav-links a {
+      position: relative;
+      min-height: 48px;
+      display: grid;
+      place-items: center;
+      color: rgba(255,255,255,.85);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: .08em;
+    }
+    .nav-links a::after {
+      content: "";
+      position: absolute;
+      right: 0;
+      bottom: 5px;
+      left: 0;
+      height: 1px;
+      background: var(--gold);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform .2s ease;
+    }
+    .nav-links a:hover::after,
+    .nav-links a:focus-visible::after { transform: scaleX(1); }
+    .nav-cta { padding-inline: 17px; border: 1px solid rgba(209,165,82,.7); }
+
+    .menu-button {
+      position: relative;
+      width: 48px;
+      height: 48px;
+      display: none;
+      place-items: center;
+      color: var(--white);
+      border: 0;
+      background: transparent;
+      cursor: pointer;
+    }
+    .menu-button span,
+    .menu-button::before,
+    .menu-button::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 25px;
+      height: 2px;
+      display: block;
+      background: currentColor;
+      transition: transform .2s ease, opacity .2s ease;
+    }
+    .menu-button::before { transform: translate(-50%, -8px); }
+    .menu-button span { transform: translate(-50%, -50%); }
+    .menu-button::after { transform: translate(-50%, 6px); }
+    .menu-button[aria-expanded="true"]::before { transform: translate(-50%, -50%) rotate(45deg); }
+    .menu-button[aria-expanded="true"] span { opacity: 0; }
+    .menu-button[aria-expanded="true"]::after { transform: translate(-50%, -50%) rotate(-45deg); }
+
+    .hero {
+      position: relative;
+      min-height: 100svh;
+      display: grid;
+      align-items: center;
+      isolation: isolate;
+      overflow: hidden;
+      color: var(--white);
+      background: var(--ink);
+    }
+    .hero-media {
+      position: absolute;
+      z-index: -3;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: 62% center;
+      scale: 1.03;
+      animation: hero-breathe 14s ease-out both;
+    }
+    .hero::before {
+      content: "";
+      position: absolute;
+      z-index: -2;
+      inset: 0;
+      background:
+        linear-gradient(90deg, rgba(5,13,25,.95) 0%, rgba(5,13,25,.76) 37%, rgba(5,13,25,.18) 68%, rgba(5,13,25,.18) 100%),
+        linear-gradient(0deg, rgba(5,13,25,.72), transparent 45%);
+    }
+    .hero::after {
+      content: "";
+      position: absolute;
+      z-index: -1;
+      inset: 0;
+      opacity: .1;
+      background-image:
+        linear-gradient(45deg, transparent 47%, var(--gold) 48%, var(--gold) 52%, transparent 53%),
+        linear-gradient(-45deg, transparent 47%, var(--gold) 48%, var(--gold) 52%, transparent 53%);
+      background-size: 32px 32px;
+      mask-image: linear-gradient(90deg, #000, transparent 42%);
+    }
+    @keyframes hero-breathe { from { scale: 1.08; } to { scale: 1.03; } }
+
+    .hero-content {
+      width: var(--content);
+      margin: 0 auto;
+      padding-block: 140px 110px;
+    }
+    .eyebrow {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 0 0 22px;
+      color: var(--gold);
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: .28em;
+    }
+    .eyebrow::before { content: ""; width: 38px; height: 1px; background: currentColor; }
+    .hero h1 {
+      max-width: 760px;
+      margin: 0;
+      font-family: var(--display);
+      font-size: clamp(47px, 7vw, 106px);
+      font-weight: 700;
+      line-height: 1.08;
+      letter-spacing: -.035em;
+      text-wrap: balance;
+    }
+    .hero h1 em { color: var(--gold); font-style: normal; }
+    .hero-lead {
+      max-width: 630px;
+      margin: 27px 0 0;
+      color: rgba(255,255,255,.8);
+      font-family: var(--display);
+      font-size: clamp(16px, 2vw, 21px);
+      line-height: 2;
+    }
+    .hero-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 37px; }
+    .button {
+      min-height: 54px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 12px 24px;
+      border: 1px solid transparent;
+      font-size: 14px;
+      font-weight: 800;
+      letter-spacing: .06em;
+      transition: transform .2s ease, background .2s ease, color .2s ease;
+    }
+    .button:hover { transform: translateY(-2px); }
+    .button-primary { color: var(--white); background: var(--vermilion); }
+    .button-ghost { color: var(--white); border-color: rgba(255,255,255,.45); background: rgba(255,255,255,.04); }
+    .button-dark { color: var(--white); background: var(--ink); }
+    .button .arrow { font-family: var(--utility); font-size: 19px; }
+
+    .hero-caption {
+      position: absolute;
+      right: 25px;
+      bottom: 18px;
+      color: rgba(255,255,255,.55);
+      font-size: 10px;
+      letter-spacing: .06em;
+    }
+    .journey-compass {
+      position: absolute;
+      right: 28px;
+      top: 50%;
+      display: grid;
+      gap: 5px;
+      transform: translateY(-50%);
+    }
+    .journey-compass a {
+      width: 40px;
+      height: 40px;
+      display: grid;
+      place-items: center;
+      color: rgba(255,255,255,.48);
+      border: 1px solid rgba(255,255,255,.16);
+      font-family: var(--display);
+      transition: color .2s ease, border .2s ease, background .2s ease;
+    }
+    .journey-compass a:hover,
+    .journey-compass a:focus-visible { color: var(--gold); border-color: var(--gold); background: rgba(11,23,40,.6); }
+
+    .numbers {
+      color: var(--white);
+      background: var(--ink);
+    }
+    .numbers-inner {
+      width: var(--content);
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1.15fr 1fr 1fr;
+      border-inline: 1px solid rgba(255,255,255,.12);
+    }
+    .number {
+      min-height: 164px;
+      padding: 28px clamp(20px, 4vw, 48px);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      border-right: 1px solid rgba(255,255,255,.12);
+    }
+    .number:last-child { border-right: 0; }
+    .number strong { color: var(--gold); font-family: var(--utility); font-size: clamp(38px, 5vw, 67px); line-height: 1; letter-spacing: -.04em; }
+    .number span { margin-top: 10px; color: rgba(255,255,255,.65); font-size: 12px; line-height: 1.5; }
+
+    .section { padding: clamp(88px, 11vw, 150px) 0; }
+    .section-inner { width: var(--content); margin: 0 auto; }
+    .section-kicker { margin: 0 0 15px; color: var(--vermilion); font-family: var(--utility); font-size: 11px; font-weight: 800; letter-spacing: .26em; text-transform: uppercase; }
+    .section-title { max-width: 890px; margin: 0; font-family: var(--display); font-size: clamp(36px, 5vw, 66px); line-height: 1.24; letter-spacing: -.025em; text-wrap: balance; }
+    .section-lead { max-width: 700px; margin: 24px 0 0; color: #555f5b; font-size: clamp(15px, 1.7vw, 18px); }
+
+    .declaration { position: relative; background: var(--mist); }
+    .declaration-grid { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(40px, 8vw, 110px); align-items: end; }
+    .big-line { margin: 0; color: var(--ink); font-family: var(--display); font-size: clamp(39px, 6.5vw, 90px); font-weight: 700; line-height: 1.22; letter-spacing: -.045em; }
+    .big-line .accent { color: var(--vermilion); }
+    .declaration-copy { padding-bottom: 10px; border-bottom: 1px solid var(--line); }
+    .declaration-copy p { margin: 0 0 24px; color: #525b57; }
+
+    .shingen { color: var(--white); background: var(--ink-soft); }
+    .shingen .section-kicker { color: var(--gold); }
+    .shingen .section-title { color: var(--white); }
+    .shingen-intro { display: grid; grid-template-columns: .82fr 1.18fr; gap: clamp(45px, 7vw, 100px); align-items: start; }
+    .shingen-mark {
+      position: sticky;
+      top: 110px;
+      min-height: 450px;
+      display: grid;
+      place-items: center;
+      border: 1px solid rgba(209,165,82,.35);
+      background:
+        radial-gradient(circle at center, rgba(209,165,82,.1), transparent 60%),
+        var(--ink);
+    }
+    .shingen-mark::before,
+    .shingen-mark::after { content: ""; position: absolute; inset: 24px; border: 1px solid rgba(209,165,82,.12); transform: rotate(45deg) scale(.71); }
+    .shingen-mark::after { inset: 75px; }
+    .shingen-kanji { position: relative; z-index: 2; color: var(--gold); font-family: var(--display); font-size: clamp(96px, 16vw, 190px); line-height: 1; }
+
+    .history-list { margin-top: 62px; }
+    .history-item {
+      display: grid;
+      grid-template-columns: 92px 1fr;
+      gap: 20px;
+      padding: 32px 0;
+      border-top: 1px solid rgba(255,255,255,.16);
+    }
+    .history-item:last-child { border-bottom: 1px solid rgba(255,255,255,.16); }
+    .history-item .index { color: var(--gold); font-family: var(--utility); font-size: 12px; letter-spacing: .14em; }
+    .history-item h3 { margin: 0 0 10px; font-family: var(--display); font-size: 27px; }
+    .history-item p { margin: 0; color: rgba(255,255,255,.66); font-size: 14px; }
+    .history-item a { width: fit-content; margin-top: 15px; display: inline-flex; align-items: center; gap: 8px; color: var(--gold); font-size: 13px; font-weight: 700; }
+
+    .journey { background: var(--paper); }
+    .journey-head { display: grid; grid-template-columns: 1fr .8fr; gap: 45px; align-items: end; }
+    .journey-head .section-lead { margin: 0; }
+    .journey-list { margin-top: 70px; counter-reset: journey; }
+    .journey-step {
+      position: relative;
+      display: grid;
+      grid-template-columns: 100px 140px minmax(0, 1fr) 1.15fr;
+      gap: clamp(18px, 3vw, 44px);
+      align-items: center;
+      min-height: 200px;
+      padding: 34px 0;
+      border-top: 1px solid var(--line);
+    }
+    .journey-step:last-child { border-bottom: 1px solid var(--line); }
+    .journey-step::before {
+      counter-increment: journey;
+      content: "0" counter(journey);
+      color: #a4a59f;
+      font-family: var(--utility);
+      font-size: 12px;
+      align-self: start;
+      padding-top: 8px;
+    }
+    .journey-char { font-family: var(--display); font-size: clamp(70px, 9vw, 122px); line-height: 1; }
+    .journey-step:nth-child(1) .journey-char { color: #3d7692; }
+    .journey-step:nth-child(2) .journey-char { color: var(--forest); }
+    .journey-step:nth-child(3) .journey-char { color: var(--vermilion); }
+    .journey-step:nth-child(4) .journey-char { color: var(--wine); }
+    .journey-time { margin: 0 0 5px; color: var(--muted); font-family: var(--utility); font-size: 11px; font-weight: 800; letter-spacing: .2em; text-transform: uppercase; }
+    .journey-step h3 { margin: 0; font-family: var(--display); font-size: clamp(24px, 3vw, 36px); line-height: 1.35; }
+    .journey-step p { margin: 0; color: #59615d; font-size: 14px; }
+
+    .treasures { color: var(--white); background: var(--wine); }
+    .treasures .section-kicker { color: #f0c27a; }
+    .treasures-grid {
+      margin-top: 65px;
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 1px;
+      background: rgba(255,255,255,.18);
+      border: 1px solid rgba(255,255,255,.18);
+    }
+    .treasure {
+      position: relative;
+      min-height: 280px;
+      padding: 32px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      overflow: hidden;
+      background: var(--wine);
+    }
+    .treasure:nth-child(1), .treasure:nth-child(4) { grid-column: span 7; }
+    .treasure:nth-child(2), .treasure:nth-child(3) { grid-column: span 5; }
+    .treasure::before {
+      content: attr(data-mark);
+      position: absolute;
+      top: -24px;
+      right: 18px;
+      color: rgba(255,255,255,.06);
+      font-family: var(--display);
+      font-size: 190px;
+      line-height: 1;
+    }
+    .treasure .tag { position: relative; color: #efc98d; font-family: var(--utility); font-size: 10px; letter-spacing: .2em; }
+    .treasure h3 { position: relative; margin: 9px 0 8px; font-family: var(--display); font-size: clamp(27px, 4vw, 45px); }
+    .treasure p { position: relative; max-width: 520px; margin: 0; color: rgba(255,255,255,.68); font-size: 14px; }
+
+    .plan { background: var(--mist); }
+    .plan-shell {
+      margin-top: 58px;
+      display: grid;
+      grid-template-columns: .62fr 1.38fr;
+      border: 1px solid var(--ink);
+      background: var(--paper);
+      box-shadow: var(--shadow);
+    }
+    .plan-name {
+      padding: clamp(34px, 6vw, 70px);
+      color: var(--white);
+      background: var(--ink);
+    }
+    .plan-name small { color: var(--gold); font-family: var(--utility); font-weight: 800; letter-spacing: .2em; }
+    .plan-name strong { display: block; margin-top: 17px; font-family: var(--display); font-size: clamp(52px, 7vw, 92px); line-height: .95; }
+    .plan-name p { margin: 27px 0 0; color: rgba(255,255,255,.64); font-size: 14px; }
+    .plan-timeline { padding: clamp(24px, 5vw, 62px); }
+    .plan-row { display: grid; grid-template-columns: 88px 1fr; gap: 18px; padding: 20px 0; border-bottom: 1px solid var(--line); }
+    .plan-row:last-child { border-bottom: 0; }
+    .plan-row time { color: var(--vermilion); font-family: var(--utility); font-size: 12px; font-weight: 800; }
+    .plan-row strong { display: block; margin-bottom: 3px; font-family: var(--display); font-size: 19px; }
+    .plan-row span { color: #65706b; font-size: 13px; }
+    .plan-actions { display: flex; flex-wrap: wrap; gap: 11px; margin-top: 30px; }
+    .copy-status { min-height: 24px; margin-top: 12px; color: var(--forest); font-size: 13px; font-weight: 700; }
+
+    .final-cta {
+      position: relative;
+      padding: clamp(92px, 13vw, 180px) 0;
+      overflow: hidden;
+      color: var(--white);
+      text-align: center;
+      background: var(--ink);
+    }
+    .final-cta::before {
+      content: "風 林 火 山";
+      position: absolute;
+      inset: 50% auto auto 50%;
+      color: rgba(209,165,82,.06);
+      font-family: var(--display);
+      font-size: clamp(100px, 18vw, 260px);
+      white-space: nowrap;
+      transform: translate(-50%, -50%);
+    }
+    .final-cta .section-inner { position: relative; }
+    .final-cta h2 { margin: 0; font-family: var(--display); font-size: clamp(39px, 6vw, 74px); line-height: 1.3; }
+    .final-cta p { margin: 20px auto 32px; color: rgba(255,255,255,.66); }
+
+    footer { padding: 44px 0 92px; color: rgba(255,255,255,.6); background: #07101d; }
+    .footer-inner { width: var(--content); margin: 0 auto; display: grid; grid-template-columns: 1fr auto; gap: 30px; align-items: end; }
+    .footer-brand { color: var(--white); font-family: var(--display); font-size: 20px; }
+    .footer-note { max-width: 700px; margin: 13px 0 0; font-size: 11px; line-height: 1.8; }
+    .footer-links { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 9px 20px; font-size: 12px; }
+    .footer-links a { text-decoration: underline; text-underline-offset: 4px; }
+
+    .mobile-cta {
+      position: fixed;
+      z-index: 90;
+      right: 12px;
+      bottom: calc(12px + env(safe-area-inset-bottom));
+      left: 12px;
+      min-height: 56px;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      color: var(--white);
+      background: var(--vermilion);
+      box-shadow: 0 14px 35px rgba(24, 8, 8, .3);
+      font-weight: 800;
+    }
+
+    .reveal { opacity: 0; transform: translateY(22px); transition: opacity .65s ease, transform .65s ease; }
+    .reveal.is-visible { opacity: 1; transform: none; }
+
+    :focus-visible { outline: 3px solid var(--gold); outline-offset: 4px; }
+
+    @media (max-width: 900px) {
+      :root { --content: min(100% - 32px, 720px); }
+      .menu-button { display: grid; }
+      .nav-links {
+        position: fixed;
+        inset: 74px 0 auto;
+        padding: 18px 16px 30px;
+        display: grid;
+        gap: 0;
+        background: rgba(11,23,40,.98);
+        transform: translateY(-130%);
+        opacity: 0;
+        transition: transform .25s ease, opacity .2s ease;
+      }
+      .nav-links.is-open { transform: none; opacity: 1; }
+      .nav-links a { justify-content: start; padding: 4px 14px; border-bottom: 1px solid rgba(255,255,255,.1); }
+      .nav-cta { margin-top: 12px; justify-content: center !important; }
+      .journey-compass { display: none; }
+      .declaration-grid,
+      .shingen-intro,
+      .journey-head,
+      .plan-shell { grid-template-columns: 1fr; }
+      .shingen-mark { position: relative; top: auto; min-height: 300px; }
+      .journey-step { grid-template-columns: 50px 90px 1fr; }
+      .journey-step p { grid-column: 3; }
+      .treasure:nth-child(n) { grid-column: span 6; }
+      .plan-name strong { font-size: 68px; }
+    }
+
+    @media (max-width: 620px) {
+      :root { --content: calc(100% - 28px); }
+      html { scroll-padding-top: 70px; }
+      .site-nav { height: 66px; }
+      .brand { font-size: 14px; }
+      .brand small { display: none; }
+      .nav-links { top: 66px; }
+      .hero { min-height: 820px; align-items: end; }
+      .hero-media { object-position: 69% center; opacity: .8; }
+      .hero::before { background: linear-gradient(0deg, rgba(5,13,25,.97) 6%, rgba(5,13,25,.72) 61%, rgba(5,13,25,.18) 100%); }
+      .hero::after { mask-image: linear-gradient(0deg, #000, transparent 58%); }
+      .hero-content { padding: 150px 0 104px; }
+      .hero h1 { max-width: 560px; font-size: clamp(45px, 14.5vw, 67px); }
+      .hero-lead { max-width: 95%; font-size: 15px; line-height: 1.9; }
+      .hero-actions { display: grid; }
+      .button { width: 100%; }
+      .hero-caption { right: 14px; bottom: 70px; font-size: 9px; }
+      .numbers-inner { width: 100%; grid-template-columns: 1fr; border-inline: 0; }
+      .number { min-height: 126px; border-right: 0; border-bottom: 1px solid rgba(255,255,255,.12); }
+      .number:last-child { border-bottom: 0; }
+      .declaration-grid { gap: 42px; }
+      .history-item { grid-template-columns: 62px 1fr; }
+      .journey-list { margin-top: 48px; }
+      .journey-step { grid-template-columns: 38px 70px 1fr; gap: 13px; padding: 27px 0; }
+      .journey-char { font-size: 65px; }
+      .journey-step h3 { font-size: 23px; }
+      .journey-step p { font-size: 13px; }
+      .treasures-grid { grid-template-columns: 1fr; }
+      .treasure:nth-child(n) { grid-column: 1; min-height: 250px; }
+      .plan-shell { margin-inline: -4px; }
+      .plan-name { padding: 36px 28px; }
+      .plan-timeline { padding: 20px 24px 28px; }
+      .plan-row { grid-template-columns: 72px 1fr; }
+      .final-cta { padding-bottom: 150px; }
+      .footer-inner { grid-template-columns: 1fr; }
+      .footer-links { justify-content: flex-start; }
+      .mobile-cta { display: flex; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; animation: none !important; transition-duration: .01ms !important; }
+      .reveal { opacity: 1; transform: none; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main">本文へ移動</a>
+
+  <nav class="site-nav" aria-label="メインナビゲーション">
+    <div class="nav-inner">
+      <a class="brand" href="#top" aria-label="KOFU 24H トップへ">
+        <span class="crest" aria-hidden="true"><span></span><span></span><span></span><span></span></span>
+        <span>甲府二十四時<small>KOFU 24H</small></span>
+      </a>
+      <button class="menu-button" type="button" aria-expanded="false" aria-controls="nav-links" aria-label="メニューを開く"><span></span></button>
+      <div class="nav-links" id="nav-links">
+        <a href="#shingen">信玄の足跡</a>
+        <a href="#journey">風林火山の旅</a>
+        <a href="#treasures">甲府の魅力</a>
+        <a class="nav-cta" href="#plan">24時間プラン</a>
+      </div>
+    </div>
+  </nav>
+
+  <header class="hero" id="top">
+    <img class="hero-media" src="site_assets/kofu-hero.png" alt="甲府盆地と富士山を望む戦国武将のイメージビジュアル" width="1672" height="941" fetchpriority="high">
+    <div class="hero-content">
+      <p class="eyebrow">甲斐の国・甲府</p>
+      <h1>風林火山、<br><em>その先の甲府へ。</em></h1>
+      <p class="hero-lead">武田信玄の記憶をたどり、渓谷の風に触れ、湯とワインの夜に泊まる。山梨は、富士山だけじゃない。</p>
+      <div class="hero-actions">
+        <a class="button button-primary" href="#journey">旅を始める <span class="arrow" aria-hidden="true">↓</span></a>
+        <a class="button button-ghost" href="#shingen">信玄をたどる <span class="arrow" aria-hidden="true">→</span></a>
+      </div>
+    </div>
+    <div class="journey-compass" aria-label="風林火山の旅へ移動">
+      <a href="#wind" aria-label="風の章へ">風</a><a href="#forest" aria-label="林の章へ">林</a><a href="#fire" aria-label="火の章へ">火</a><a href="#mountain" aria-label="山の章へ">山</a>
+    </div>
+    <small class="hero-caption">ImageGenによる甲府のイメージビジュアル</small>
+  </header>
+
+  <main id="main">
+    <section class="numbers" aria-label="山梨と甲府の観光データ">
+      <div class="numbers-inner">
+        <div class="number"><strong>3,158.8万人</strong><span>2024年 山梨県観光入込客数</span></div>
+        <div class="number"><strong>54.8%</strong><span>富士・東部圏域に集中</span></div>
+        <div class="number"><strong>26.4%</strong><span>甲府市来訪者の宿泊率</span></div>
+      </div>
+    </section>
+
+    <section class="section declaration">
+      <div class="section-inner declaration-grid reveal">
+        <p class="big-line">富士山を見て、<br><span class="accent">そのまま帰るには、</span><br>甲府は惜しい。</p>
+        <div class="declaration-copy">
+          <p>甲府には、戦国の記憶、奇岩と滝の渓谷、湯村の湯、甲州ワイン、国内有数のジュエリー産業がある。離れて見える魅力を、一日の物語としてつなげる。</p>
+          <p>目的地を増やすのではなく、滞在する理由をつくる。それが「KOFU 24H」です。</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section shingen" id="shingen">
+      <div class="section-inner shingen-intro">
+        <div class="shingen-mark reveal" aria-hidden="true"><span class="shingen-kanji">信</span></div>
+        <div>
+          <p class="section-kicker">Legacy of Takeda</p>
+          <h2 class="section-title reveal">信玄の記憶を、<br>いまの城下町に重ねる。</h2>
+          <p class="section-lead reveal" style="color: rgba(255,255,255,.66)">武田信玄を知る旅は、英雄の逸話だけでは終わらない。甲斐を治めた武田氏の拠点、祭り、後世の城郭を歩くと、甲府という都市が何層もの時間でできていることが見えてくる。</p>
+
+          <div class="history-list">
+            <article class="history-item reveal">
+              <span class="index">TRACE 01</span>
+              <div><h3>武田神社と躑躅ヶ崎館跡</h3><p>武田氏三代が本拠とした館跡を歩く。土塁や堀の痕跡から、戦国大名の政治と暮らしを想像できる場所。</p></div>
+            </article>
+            <article class="history-item reveal">
+              <span class="index">TRACE 02</span>
+              <div><h3>信玄ミュージアム</h3><p>史跡武田氏館跡の歴史を、展示や映像でつかむ。現地を歩く前後に立ち寄ると、見えるものが変わる。</p></div>
+            </article>
+            <article class="history-item reveal">
+              <span class="index">TRACE 03</span>
+              <div><h3>甲府城跡という、もう一つの時代</h3><p>甲府城は武田氏の滅亡後に築かれた城郭。信玄の時代と混同せず、甲府の歴史が次の時代へ移った証として歩きたい。</p><a href="https://www.city.kofu.yamanashi.jp/welcome/rekishi/yukari.html" target="_blank" rel="noopener">信玄公ゆかりの場所を見る <span aria-hidden="true">↗</span></a></div>
+            </article>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section journey" id="journey">
+      <div class="section-inner">
+        <div class="journey-head">
+          <div><p class="section-kicker">Fūrinkazan Journey</p><h2 class="section-title reveal">四文字を、<br>24時間の旅にする。</h2></div>
+          <p class="section-lead reveal">朝の城下町から、渓谷、ワインの夜、湯と工芸の翌朝へ。風林火山を戦の言葉ではなく、甲府を深く味わう旅のリズムとして読み替えます。</p>
+        </div>
+
+        <div class="journey-list">
+          <article class="journey-step reveal" id="wind">
+            <span class="journey-char" aria-hidden="true">風</span>
+            <div><p class="journey-time">Morning / 09:30</p><h3>城下町を、風のように歩く。</h3></div>
+            <p>甲府駅から甲府城跡へ。北へ足を延ばし、武田神社と信玄ミュージアムで甲斐武田氏の時間に触れる。</p>
+          </article>
+          <article class="journey-step reveal" id="forest">
+            <span class="journey-char" aria-hidden="true">林</span>
+            <div><p class="journey-time">Day / 13:30</p><h3>昇仙峡の静けさへ入る。</h3></div>
+            <p>覚円峰、仙娥滝、荒川の流れ。奇岩の間を歩き、盆地とは違う山の空気に包まれる。</p>
+          </article>
+          <article class="journey-step reveal" id="fire">
+            <span class="journey-char" aria-hidden="true">火</span>
+            <div><p class="journey-time">Evening / 18:00</p><h3>ワインと灯りで、夜を熱くする。</h3></div>
+            <p>甲州ワイン、地元の料理、中心街の小さな店。日帰りでは出会えない、甲府の夜の表情を楽しむ。</p>
+          </article>
+          <article class="journey-step reveal" id="mountain">
+            <span class="journey-char" aria-hidden="true">山</span>
+            <div><p class="journey-time">Next Morning / 08:00</p><h3>湯にほどけ、工芸を持ち帰る。</h3></div>
+            <p>湯村温泉で朝を迎え、ジュエリーや甲州印伝の技に触れる。旅の記憶を、手元に残るものへ。</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section treasures" id="treasures">
+      <div class="section-inner">
+        <p class="section-kicker">Four Treasures</p>
+        <h2 class="section-title reveal">甲府でしか、<br>この四つは重ならない。</h2>
+        <div class="treasures-grid">
+          <article class="treasure reveal" data-mark="峡"><span class="tag">NATURE</span><h3>御嶽昇仙峡</h3><p>花崗岩の断崖と清流がつくる、日本遺産の渓谷。季節と時間で、岩肌の色まで変わる。</p></article>
+          <article class="treasure reveal" data-mark="湯"><span class="tag">ONSEN</span><h3>信玄の湯 湯村温泉</h3><p>甲府駅から近い温泉郷。夜を終える場所ではなく、翌朝へつなぐ旅の拠点に。</p></article>
+          <article class="treasure reveal" data-mark="葡"><span class="tag">WINE</span><h3>甲州ワイン</h3><p>盆地の食と一緒に味わうと、ワインは土産から旅の時間へ変わる。</p></article>
+          <article class="treasure reveal" data-mark="宝"><span class="tag">CRAFT</span><h3>ジュエリーと甲州印伝</h3><p>研磨、彫金、漆と鹿革。山梨の手仕事は、見るだけでなく体験し、持ち帰れる観光資源。</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section plan" id="plan">
+      <div class="section-inner">
+        <p class="section-kicker">Your 24 Hours</p>
+        <h2 class="section-title reveal">一泊すると、<br>甲府はひとつにつながる。</h2>
+        <div class="plan-shell reveal">
+          <div class="plan-name"><small>MODEL JOURNEY</small><strong>KOFU<br>24H</strong><p>歴史、自然、湯、食、工芸を一続きにした、甲府一泊のモデルプラン。</p></div>
+          <div class="plan-timeline">
+            <div class="plan-row"><time>09:30</time><div><strong>甲府駅・甲府城跡</strong><span>城下町の輪郭をつかむ</span></div></div>
+            <div class="plan-row"><time>11:00</time><div><strong>武田神社・信玄ミュージアム</strong><span>甲斐武田氏の拠点を歩く</span></div></div>
+            <div class="plan-row"><time>13:30</time><div><strong>御嶽昇仙峡</strong><span>渓谷と滝、山の空気に触れる</span></div></div>
+            <div class="plan-row"><time>17:30</time><div><strong>信玄の湯 湯村温泉</strong><span>湯でほどけ、夜へ向かう</span></div></div>
+            <div class="plan-row"><time>19:30</time><div><strong>中心街で甲州ワイン</strong><span>山梨の食を、夜の時間ごと味わう</span></div></div>
+            <div class="plan-row"><time>翌 09:30</time><div><strong>ジュエリー・甲州印伝</strong><span>工房と手仕事で旅を締める</span></div></div>
+            <div class="plan-actions">
+              <button class="button button-dark" type="button" id="copy-plan">旅程をコピー <span class="arrow" aria-hidden="true">⧉</span></button>
+              <a class="button" style="border-color: var(--ink)" href="https://kofu-tourism.com/" target="_blank" rel="noopener">公式観光情報を見る <span aria-hidden="true">↗</span></a>
+            </div>
+            <p class="copy-status" id="copy-status" role="status" aria-live="polite"></p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="final-cta">
+      <div class="section-inner reveal">
+        <h2>山梨は、<br>富士山だけじゃない。</h2>
+        <p>次の週末は、甲府で夜を越えてみませんか。</p>
+        <a class="button button-primary" href="https://www.city.kofu.yamanashi.jp/welcome/index.html" target="_blank" rel="noopener">甲府市の観光情報へ <span aria-hidden="true">↗</span></a>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+      <div><div class="footer-brand">甲府二十四時 / KOFU 24H</div><p class="footer-note">本ページは大学での観光提案を目的とした試作です。旅行前には各施設の営業日、交通、予約条件を公式情報で確認してください。ヒーロー画像はImageGenによるイメージで、実在の景観をそのまま再現した写真ではありません。</p></div>
+      <div class="footer-links"><a href="https://kofu-tourism.com/" target="_blank" rel="noopener">甲府観光ナビ</a><a href="https://www.yamanashi-kankou.jp/" target="_blank" rel="noopener">富士の国やまなし</a><a href="https://www.city.kofu.yamanashi.jp/kanko/shosenkyo/japanheritage.html" target="_blank" rel="noopener">日本遺産 御嶽昇仙峡</a></div>
+    </div>
+  </footer>
+
+  <a class="mobile-cta" href="#plan">24時間プランを見る</a>
+
+  <script>
+    const nav = document.querySelector('.site-nav');
+    const menuButton = document.querySelector('.menu-button');
+    const navLinks = document.querySelector('.nav-links');
+
+    const closeMenu = () => {
+      menuButton.setAttribute('aria-expanded', 'false');
+      menuButton.setAttribute('aria-label', 'メニューを開く');
+      navLinks.classList.remove('is-open');
+      nav.classList.remove('is-open');
+    };
+
+    menuButton.addEventListener('click', () => {
+      const open = menuButton.getAttribute('aria-expanded') === 'true';
+      menuButton.setAttribute('aria-expanded', String(!open));
+      menuButton.setAttribute('aria-label', open ? 'メニューを開く' : 'メニューを閉じる');
+      navLinks.classList.toggle('is-open', !open);
+      nav.classList.toggle('is-open', !open);
+    });
+
+    navLinks.querySelectorAll('a').forEach(link => link.addEventListener('click', closeMenu));
+    window.addEventListener('scroll', () => nav.classList.toggle('is-scrolled', window.scrollY > 24), { passive: true });
+
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (!reducedMotion && 'IntersectionObserver' in window) {
+      const observer = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { threshold: .12 });
+      document.querySelectorAll('.reveal').forEach(element => observer.observe(element));
+    } else {
+      document.querySelectorAll('.reveal').forEach(element => element.classList.add('is-visible'));
+    }
+
+    const itinerary = `KOFU 24H モデルプラン
+09:30 甲府駅・甲府城跡
+11:00 武田神社・信玄ミュージアム
+13:30 御嶽昇仙峡
+17:30 信玄の湯 湯村温泉
+19:30 中心街で甲州ワイン
+翌09:30 ジュエリー・甲州印伝
+
+※営業日・交通・予約条件は公式情報をご確認ください。`;
+
+    document.getElementById('copy-plan').addEventListener('click', async () => {
+      const status = document.getElementById('copy-status');
+      try {
+        await navigator.clipboard.writeText(itinerary);
+        status.textContent = '旅程をコピーしました。';
+      } catch {
+        const area = document.createElement('textarea');
+        area.value = itinerary;
+        area.setAttribute('readonly', '');
+        area.style.position = 'fixed';
+        area.style.opacity = '0';
+        document.body.appendChild(area);
+        area.select();
+        document.execCommand('copy');
+        area.remove();
+        status.textContent = '旅程をコピーしました。';
+      }
+    });
+  </script>
+</body>
+</html>
